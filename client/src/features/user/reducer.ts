@@ -2,6 +2,8 @@ import { Profile } from "./types";
 import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
 import { asyncHoloAction } from "./actions";
 
+import { base64string as defaultImage } from "./defaultImageb64";
+
 export const initialState: Profile = {
   nickname: "",
   fields: { avatar: "" },
@@ -17,7 +19,13 @@ export const userSlice = createSlice({
         payload,
         meta: { cellIdString },
       } = action;
-      return { [payload.agent_pub_key]: { ...payload.profile } };
+      return {
+        nickname: payload.profile.nickname,
+        fields: {
+          avatar: payload.profile.avatar || defaultImage,
+          agentId: payload.agent_pub_key,
+        },
+      };
     });
     builder.addCase(asyncHoloAction.failure(), (state, action) => {
       const {
